@@ -166,7 +166,67 @@ To interact with AWS services such as **ECR** and **ECS**, you need to configure
 
 ---
 
-### **Step 5: Set Up Jenkins Pipeline for Flask App Deployment**
+### **Step 5: Push the Docker Image to ECR (Elastic Container Registry)**
+
+1. **Create an ECR Repository**:
+
+   - Go to the **ECR** section of AWS Management Console.
+   - Click **Create repository** and name it `flask-app`.
+   - Leave the default settings and create the repository.
+
+2. **Authenticate Docker to ECR**:
+
+   Use the AWS CLI to authenticate Docker with ECR:
+
+   ```bash
+   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+   ```
+
+   Replace `<aws_account_id>` with your AWS account ID.
+
+3. **Tag the Docker Image**:
+
+   Tag your Docker image for ECR:
+
+   ```bash
+   docker tag flask-app:latest <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+   ```
+
+4. **Push the Image to ECR**:
+
+   Push your Docker image to your ECR repository:
+
+   ```bash
+   docker push <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+   ```
+
+---
+
+### **Step 6: Set Up ECS Cluster and Task Definition**
+
+1. **Create an ECS Cluster**:
+   
+   - Go to **ECS** in AWS Console.
+   - Click **Create Cluster**.
+   - Select **EC2 Linux + Networking** (or **Fargate** if you don’t want to manage EC2 instances) and click **Next Step**.
+   - Enter the cluster name (e.g., `flask-cluster`) and create the cluster.
+
+2. **Create a Task Definition**:
+   
+   - Go to the **Task Definitions** section in ECS.
+   - Click **Create new Task Definition**.
+   - Select the launch type (e.g., **EC2** or **Fargate**).
+   - Define the container using the ECR image URL you pushed earlier.
+     - Container name: `flask-app`
+     - Image: `<aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest`
+     - Port mappings: `5000:5000`
+     - CPU and memory settings: Choose based on your application needs.
+   - Save the task definition.
+
+---
+
+
+### **Step 7: Set Up Jenkins Pipeline for Flask App Deployment**
 
 Now, let’s set up a Jenkins **Pipeline** to automate the process of building and deploying your Flask app.
 
