@@ -180,7 +180,7 @@ Now, let’s set up a Jenkins **Pipeline** to automate the process of building a
    
    Under **Pipeline**, in the **Definition** section, select **Pipeline script from SCM**.
    - Set **SCM** to **Git**.
-   - Enter the **GitHub repository URL** for your Flask app (e.g., `https://github.com/username/flask-app.git`).
+   - Enter the **GitHub repository URL** for your Flask app (e.g., `https://github.com/arifhossen/flask-app-aws-ecs-deployment.git`).
    - If your repository is private, add **Credentials** for GitHub access.
 
 3. **Pipeline Script for Jenkins**:
