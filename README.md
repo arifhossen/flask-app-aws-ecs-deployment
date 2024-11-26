@@ -260,7 +260,7 @@ Now, let’s set up a Jenkins **Pipeline** to automate the process of building a
        stages {
            stage('Checkout') {
                steps {
-                   git 'https://github.com/arifhossen/flask-app-aws-ecs-deployment.git'
+                   git branch: 'main', url: 'https://github.com/arifhossen/flask-app-aws-ecs-deployment.git'
                }
            }
            
