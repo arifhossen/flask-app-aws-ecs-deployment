@@ -252,6 +252,9 @@ Now, let’s set up a Jenkins **Pipeline** to automate the process of building a
        agent any
        
        environment {
+        
+           // Referencing the AWS credentials stored in Jenkins
+           AWS_CREDENTIALS = credentials('aws-credentials-id')        
            AWS_REGION = 'us-east-1'
            ECR_REPO_URI = '<aws_account_id>.dkr.ecr.${AWS_REGION}.amazonaws.com/flask-app'
            IMAGE_TAG = 'latest'
@@ -275,7 +278,12 @@ Now, let’s set up a Jenkins **Pipeline** to automate the process of building a
            stage('Login to ECR') {
                steps {
                    script {
-                       sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}'
+                      withAWS(credentials: 'aws-credentials-id', region: 'us-east-1') {
+                        sh '''
+                        # Authenticate Docker to the AWS ECR registry
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${ECR_REPO_URI}
+                        '''
+                     }
                    }
                }
            }
@@ -291,7 +299,7 @@ Now, let’s set up a Jenkins **Pipeline** to automate the process of building a
            stage('Deploy to ECS') {
                steps {
                    script {
-                       sh 'aws ecs update-service --cluster flask-cluster --service flask-service --force-new-deployment --region ${AWS_REGION}'
+                       sh 'aws ecs update-service --cluster flask-app-ecs-cluster --service flask-service --force-new-deployment --region ${AWS_REGION}'
                    }
                }
            }
